@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 local function is_in_header()
     local line = vim.api.nvim_get_current_line()
