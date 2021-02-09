@@ -36,7 +36,7 @@ function M.setup_completion(vcard_directory)
     function complete_vcard(prefix, score_func)
         local items = {}
         for _, contact in pairs(contacts) do
-            if vim.startswith(contact:lower(), prefix:lower()) and is_in_header()  then
+            if vim.startswith(contact:lower(), prefix:lower()) and is_in_header() then
                 table.insert(items, {
                   word = contact,
                   kind = 'vCard',
@@ -49,5 +49,36 @@ function M.setup_completion(vcard_directory)
     require('completion').addCompletionSource('vCard', { item = complete_vcard })
 end
 
+function M.setup_compe(vcard_directory)
+    local compe = require('compe')
+    local contacts = get_contacts(vcard_directory)
+
+    local Source = {}
+
+    function Source.new()
+        return setmetatable({}, { __index = Source })
+    end
+
+    function Source.get_metadata(_)
+        return {
+            dup = 0,
+            menu = 'vCard',
+            priority = 100,
+            filetypes = { 'mail' }
+        }
+    end
+
+    function Source.determine(_, context)
+        return compe.helper.determine(context)
+    end
+
+    function Source.complete(self, context)
+        if is_in_header() then
+            context.callback({ items = contacts })
+        end
+    end
+
+    compe.register_source('vCard', Source)
+end
 
 return M
