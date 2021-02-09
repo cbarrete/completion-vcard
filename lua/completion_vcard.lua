@@ -55,10 +55,6 @@ function M.setup_compe(vcard_directory)
 
     local Source = {}
 
-    function Source.new()
-        return setmetatable({}, { __index = Source })
-    end
-
     function Source.get_metadata(_)
         return {
             dup = 0,
