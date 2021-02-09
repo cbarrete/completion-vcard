@@ -18,7 +18,7 @@ vim.g.completion_chain_complete_list = {
 For `nvim-compe`:
 
 ```lua
-require('completion_vcard').setup_compe('~/documents/contacts')
+require('completion_vcard').setup_compe('~/path/to/vcard/dir')
 
 require('compe').setup({
     source = {
