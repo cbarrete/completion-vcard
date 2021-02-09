@@ -10,7 +10,7 @@ local function is_in_header()
     return false
 end
 
-function M.setup(vcard_directory)
+local function get_contacts(vcard_directory)
     local contacts = {}
     local filenames = vim.fn.split(vim.fn.globpath(vcard_directory, '*.vcf'), '\n')
     for _, filename in pairs(filenames) do
@@ -28,10 +28,13 @@ function M.setup(vcard_directory)
             table.insert(contacts, name .. ' <' .. email .. '>')
         end
     end
+    return contacts
+end
 
+function M.setup_completion(vcard_directory)
     function complete_vcard(prefix, score_func)
         local items = {}
-        for _, contact in pairs(contacts) do
+        for _, contact in pairs(get_contacts(vcard_directory)) do
             if vim.startswith(contact:lower(), prefix:lower()) and is_in_header()  then
                 table.insert(items, {
                   word = contact,
