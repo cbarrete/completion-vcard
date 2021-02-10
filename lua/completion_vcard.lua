@@ -57,7 +57,7 @@ function M.setup_compe(vcard_directory)
 
     function Source.get_metadata(_)
         return {
-            menu = 'vCard',
+            menu = '[vCard]',
             priority = 100,
             filetypes = { 'mail' }
         }
