@@ -2,8 +2,8 @@ local M = {}
 
 local function is_in_header()
     local line = vim.api.nvim_get_current_line()
-    for _, needle in pairs({ 'Bcc', 'Cc', 'From', 'Reply-To', 'To' }) do
-        if vim.startswith(line, needle .. ':') then
+    for _, header in pairs({ 'Bcc:', 'Cc:', 'From:', 'Reply-To:', 'To:' }) do
+        if vim.startswith(line, header) then
             return true
         end
     end
