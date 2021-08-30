@@ -35,12 +35,14 @@ function M.setup_completion(vcard_directory)
     local contacts = get_contacts(vcard_directory)
     function complete_vcard(prefix, score_func)
         local items = {}
-        for _, contact in pairs(contacts) do
-            if vim.startswith(contact:lower(), prefix:lower()) and is_in_header() then
-                table.insert(items, {
-                  word = contact,
-                  kind = 'vCard',
-                })
+        if is_in_header() then
+            for _, contact in pairs(contacts) do
+                if vim.startswith(contact:lower(), prefix:lower()) then
+                    table.insert(items, {
+                            word = contact,
+                            kind = 'vCard',
+                        })
+                end
             end
         end
         return items
