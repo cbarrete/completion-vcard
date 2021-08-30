@@ -19,13 +19,24 @@ local function get_contacts(vcard_directory)
         for _, line in pairs(vim.fn.readfile(filename)) do
             if vim.startswith(line, 'FN:') then
                 name = line:sub(4)
-            end
-            if line:match('EMAIL') then
+            elseif vim.startswith(line, 'N:') and name == nil then
+                local parts = vim.fn.split(line:sub(3), ';')
+                if #parts == 1 and parts[1] ~= '' then
+                    name = parts[1]
+                elseif #parts > 1 then
+                    local potential_name = (parts[2] .. ' ' .. parts[1]):match('^%s*(.-)%s*$')
+                    if potential_name ~= '' then
+                        name = potential_name
+                    end
+                end
+            elseif line:match('EMAIL') then
                 table.insert(emails, line:match(':(.*)'))
             end
         end
-        for _, email in pairs(emails) do
-            table.insert(contacts, name .. ' <' .. email .. '>')
+        if name ~= nil then
+            for _, email in pairs(emails) do
+                table.insert(contacts, name .. ' <' .. email .. '>')
+            end
         end
     end
     return contacts
