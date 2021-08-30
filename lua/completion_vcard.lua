@@ -43,12 +43,14 @@ local function get_contacts(vcard_directory)
 end
 
 function M.setup_completion(vcard_directory)
+    local util = require('completion/util')
     local contacts = get_contacts(vcard_directory)
-    function complete_vcard(prefix, score_func)
+    function complete_vcard(prefix)
         local items = {}
         if is_in_header() then
             for _, contact in pairs(contacts) do
-                if vim.startswith(contact:lower(), prefix:lower()) then
+                local score = util.fuzzy_score(prefix, contact)
+                if score < #prefix/3 or #prefix == 0 then
                     table.insert(items, {
                             word = contact,
                             kind = 'vCard',
