@@ -21,14 +21,7 @@ local function get_contacts(vcard_directory)
                 name = line:sub(4)
             elseif vim.startswith(line, 'N:') and name == nil then
                 local parts = vim.fn.split(line:sub(3), ';')
-                if #parts == 1 and parts[1] ~= '' then
-                    name = parts[1]
-                elseif #parts > 1 then
-                    local potential_name = (parts[2] .. ' ' .. parts[1]):match('^%s*(.-)%s*$')
-                    if potential_name ~= '' then
-                        name = potential_name
-                    end
-                end
+                name = vim.trim(table.concat(parts, ' '))
             elseif line:match('EMAIL') then
                 table.insert(emails, line:match(':(.*)'))
             end
