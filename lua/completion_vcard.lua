@@ -20,8 +20,16 @@ local function get_contacts(vcard_directory)
             if vim.startswith(line, 'FN:') then
                 name = line:sub(4)
             elseif vim.startswith(line, 'N:') and name == nil then
-                local parts = vim.fn.split(line:sub(3), ';')
-                name = vim.trim(table.concat(parts, ' '))
+                local components = vim.fn.split(line:sub(3), ';')
+                if #components > 1 then
+                    components = {components[2], components[1]}
+                end
+                local joined_components = {}
+                for _, component in ipairs(components) do
+                    local joined_component = component:gsub('([^\\]),', '%1 '):gsub('([^\\])\\,', '%1,')
+                    table.insert(joined_components, joined_component)
+                end
+                name = vim.trim(table.concat(joined_components, ' '))
             elseif line:match('EMAIL') then
                 table.insert(emails, line:match(':(.*)'))
             end
