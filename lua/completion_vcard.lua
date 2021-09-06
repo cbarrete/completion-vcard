@@ -20,15 +20,29 @@ local function get_contacts(vcard_directory)
             if vim.startswith(line, 'FN:') then
                 name = line:sub(4)
             elseif vim.startswith(line, 'N:') and name == nil then
+                -- According to the vCard specification (source:
+                -- https://datatracker.ietf.org/doc/html/rfc6350#section-6.2.2), the N identification property can be
+                -- made up of up to 5 components, separated by semicolons.
+
+                -- So it's easier to understand these steps, here's an example from the specification:
+                -- N:Stevenson;John;Philip,Paul;Dr.;Jr.,M.D.,A.C.P.
+
+                -- First, we separate these components.
                 local components = vim.fn.split(line:sub(3), ';')
+                -- If there are more than 1 of them, we use only the second and first parts, in that order because
+                -- these correspond to the contact's first and last names.
                 if #components > 1 then
                     components = {components[2], components[1]}
                 end
                 local joined_components = {}
+                -- Again according to the specification, commas separate different parts of a component. So, we replace
+                -- unescaped commas with spaces and remove the escape characters from commas.
                 for _, component in ipairs(components) do
                     local joined_component = component:gsub('([^\\]),', '%1 '):gsub('([^\\])\\,', '%1,')
                     table.insert(joined_components, joined_component)
                 end
+                -- Finally, we join the components with spaces and remove any trailing whitespace in case one of the
+                -- components was an empty string or ended with whitespace.
                 name = vim.trim(table.concat(joined_components, ' '))
             elseif line:match('EMAIL') then
                 table.insert(emails, line:match(':(.*)'))
