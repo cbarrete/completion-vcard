@@ -106,4 +106,28 @@ function M.setup_compe(vcard_directory)
     compe.register_source('vCard', Source)
 end
 
+function M.setup_cmp(vcard_directory)
+    local contacts = vim.tbl_map(function(contact)
+        return { label = contact, detail = 'vCard' }
+    end, get_contacts(vcard_directory))
+
+    local source = {}
+
+    function source.get_debug_name()
+        return 'vCard'
+    end
+
+    function source.is_available()
+        return vim.bo.filetype == 'mail'
+    end
+
+    function source.complete(_, _, callback)
+        if is_in_header() then
+            callback({ items = contacts })
+        end
+    end
+
+    return source
+end
+
 return M
