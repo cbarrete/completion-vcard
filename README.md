@@ -1,6 +1,6 @@
 # completion-vcard
 
-vCard completion source for [completion-nvim](https://github.com/nvim-lua/completion-nvim) and [nvim-compe](https://github.com/hrsh7th/nvim-compe).
+vCard completion source for [completion-nvim](https://github.com/nvim-lua/completion-nvim), [nvim-compe](https://github.com/hrsh7th/nvim-compe), and [nvim-cmp](https://github.com/hrsh7th/nvim-cmp).
 
 ## Usage
 
@@ -26,4 +26,19 @@ require('compe').setup({
         -- probably some other sources as well
     }
 })
+```
+
+For `nvim-cmp`:
+
+```lua
+require('cmp').setup({
+    -- ...
+    sources = {
+        { name = 'vCard' },
+        -- ...
+    },
+})
+
+-- this can be e.g. in `after/ftplugin/mail.lua`, but `init.lua` is also fine
+require('cmp').register_source('vCard', require('completion_vcard').setup_cmp('~/path/to/vcard/dir'))
 ```
