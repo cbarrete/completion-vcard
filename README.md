@@ -39,6 +39,5 @@ require('cmp').setup({
     },
 })
 
--- this can be e.g. in `after/ftplugin/mail.lua`, but `init.lua` is also fine
 require('cmp').register_source('vCard', require('completion_vcard').setup_cmp('~/path/to/vcard/dir'))
 ```
