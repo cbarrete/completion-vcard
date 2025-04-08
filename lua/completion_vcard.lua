@@ -130,4 +130,57 @@ function M.setup_cmp(vcard_directory)
     return source
 end
 
+function M.setup_native(vcard_directory)
+    local contacts = get_contacts(vcard_directory)
+
+    -- Prevent @ and . from breaking/resetting autocompletion.
+    vim.opt.iskeyword:append({'@-@', '.'})
+
+    vim.lsp.start({
+        name = "vCard",
+        cmd = function()
+            is_closing = false
+
+            local triggers = {}
+            for _, c in ipairs(vim.split('@.ABCDEFHIJKLMNOPQRSTUVXYZabcdefhijklmnopqrstuvxyz', '')) do
+                table.insert(triggers, c)
+            end
+
+            return {
+                request = function(method, params, callback)
+                    if method == 'initialize' then
+                        callback(nil, {
+                            capabilities = {
+                                completionProvider = {
+                                    triggerCharacters = triggers,
+                                },
+                            },
+                        })
+                    elseif method == 'textDocument/completion' then
+                        if not is_in_header() then
+                            callback(nil, {items = {}})
+                            return
+                        end
+                        items = {}
+                        for _, address in pairs(contacts) do
+                            table.insert(items, {
+                                label = address,
+                                kind = vim.lsp.protocol.CompletionItemKind.Text,
+                                insertText = address,
+                                insertTextFormat = vim.lsp.protocol.InsertTextFormat.PlainText,
+                            })
+                        end
+                        callback(nil, {items = items})
+                    else
+                        vim.notify('completion-vcard: Unhandled method ' .. method, vim.log.levels.WARN)
+                    end
+                end,
+                notify = function() end,
+                is_closing = function() return is_closing end,
+                terminate = function() is_closing = true end,
+            }
+        end,
+    })
+end
+
 return M
